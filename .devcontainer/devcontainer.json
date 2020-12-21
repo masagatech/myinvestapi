@@ -1,0 +1,10 @@
+{
+    "name": "GO ENV",
+    "dockerFile":"Dockerfile",
+    "appPort": [6000],
+    "runArgs":["-u","go"],
+    "settings": {
+        "workbench.colorTheme": "Kimbie Dark"
+    }
+    
+}

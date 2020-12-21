@@ -1,0 +1,31 @@
+database:
+  log_queries: true
+  timeout_seconds: 5
+  url: postgres://postgres:Sa%231234%24@postgressdb-1.cdzdqhoyswos.us-east-2.rds.amazonaws.com:5432/abst?sslmode=disable
+
+zerodha:
+  api_url: https://zerodha-sandbox.herokuapp.com
+  api_key: 2323123
+  api_secret: 2132132112
+  redirect_url: http://localhost:8080/#/settings/broker
+
+mongo:
+  url: mongodb://localhost:27017
+  db: myinvest
+server:
+  port: :8009
+  debug: true
+  read_timeout_seconds: 20
+  write_timeout_seconds: 20
+
+jwt:
+  duration_minutes: 15    
+  refresh_duration_minutes: 15
+  max_refresh_minutes: 1440
+  signing_algorithm: HS256
+  min_secret_length: 64
+  secret: mysecret@
+
+application:
+  min_password_strength: 1
+  swagger_ui_path: assets/swaggerui

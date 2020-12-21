@@ -1,0 +1,16 @@
+<mjml>
+  <mj-body>
+    <mj-section>
+      <mj-column>
+      
+        <mj-text font-size="28px" align="center" font-weight="bold" color="#080808" font-family="helvetica">My-Invest</mj-text>
+        <mj-divider border-color="#080808"></mj-divider>
+
+        <mj-text font-size="25px" align="center" color="#00bd00" font-family="helvetica">Session Created</mj-text>
+        <mj-spacer></mj-spacer>
+        <mj-spacer></mj-spacer>
+        <mj-button font-size="24px" border-radius="10px" width="240px">Done</mj-button>
+      </mj-column>
+    </mj-section>
+  </mj-body>
+</mjml>
