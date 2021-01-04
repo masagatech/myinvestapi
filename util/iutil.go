@@ -2,6 +2,7 @@ package util
 
 import (
 	"github.com/dgrijalva/jwt-go"
+	redis "github.com/go-redis/redis/v8"
 	"github.com/labstack/echo/v4"
 )
 
@@ -20,4 +21,9 @@ func GetTokenData(c echo.Context) TokenData {
 		_tokenD.Expiry = claims["exp"].(float64)
 	}
 	return _tokenD
+}
+
+func GetRedis(c echo.Context) *redis.Client {
+	_db := c.Get("redis").(*redis.Client)
+	return _db
 }

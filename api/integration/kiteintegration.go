@@ -34,7 +34,7 @@ func create_step1(c echo.Context) error {
 func back_url(c echo.Context) error {
 	_config := c.Get("config").(*util.Configuration)
 	request_token := c.QueryParam("request_token")
-	redirect_params := c.QueryParam("redirect_params") // user id
+	redirect_params := c.QueryParam("uid") // user id
 	kc := module.GetZerodhaInstance(c)
 
 	data, err := kc.GenerateSession(request_token, _config.Zerodha.ApiSecret)
@@ -49,7 +49,7 @@ func back_url(c echo.Context) error {
 	// Set access token
 	kc.SetAccessToken(data.AccessToken)
 
-	util.SessionSet(c, redirect_params, "access_token", request_token)
+	util.SessionSet(c, redirect_params, "access_token", data.AccessToken)
 
 	accesstoken := util.SessionGet(c, redirect_params, "access_token")
 
@@ -64,7 +64,7 @@ func back_url(c echo.Context) error {
 func GetSesssion(c echo.Context, uid string) *kiteconnect.Client {
 	accesstoken := util.SessionGet(c, uid, "access_token")
 	kc := module.GetZerodhaInstance(c)
-	kc.SetAccessToken(accesstoken.(string))
+	kc.SetAccessToken(accesstoken)
 	return kc
 }
 

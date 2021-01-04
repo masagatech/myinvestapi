@@ -32,11 +32,19 @@ func Load(path string) (*Configuration, error) {
 
 // Configuration holds data necessary for configuring application
 type Configuration struct {
-	Server  *Server      `yaml:"server,omitempty"`
-	Zerodha *Zerodha     `yamal:"zerodha,omitempty"`
-	DB      *Database    `yaml:"mongo,omitempty"`
-	JWT     *JWT         `yaml:"jwt,omitempty"`
-	App     *Application `yaml:"application,omitempty"`
+	Server  *Server        `yaml:"server,omitempty"`
+	Zerodha *Zerodha       `yamal:"zerodha,omitempty"`
+	DB      *Database      `yaml:"mongo,omitempty"`
+	JWT     *JWT           `yaml:"jwt,omitempty"`
+	App     *Application   `yaml:"application,omitempty"`
+	Redis   *RedisDatabase `yaml:"redis,omitempty"`
+}
+
+// Database holds data necessary for database configuration
+type RedisDatabase struct {
+	Addr     string `yaml:"address,omitempty"`
+	Password string `yaml:"password,omitempty"`
+	DB       int    `yaml:"db,omitempty"`
 }
 
 // Database holds data necessary for database configuration

@@ -10,6 +10,7 @@ import (
 	"text/template"
 	"time"
 
+	redis "github.com/go-redis/redis/v8"
 	"github.com/gorilla/sessions"
 	"github.com/labstack/echo-contrib/session"
 	"github.com/labstack/echo/v4"
@@ -21,8 +22,9 @@ import (
 func New(cfg *util.Configuration, db *mgo.Session) *echo.Echo {
 	e := echo.New()
 
-	e.Use(session.Middleware(sessions.NewCookieStore([]byte("sec2"))))
-
+	//e.Use(session.Middleware(sessions.NewCookieStore([]byte("sec2"))))
+	e.Use(redisMiddleware(redisInstance(cfg)))
+	e.Use(session.Middleware(sessions.NewFilesystemStore("", []byte("key-1"), nil)))
 	e.Use(middleware.Logger(), middleware.Recover(),
 		CORS(), Headers(),
 		dataSourceMiddleware(db, cfg),
@@ -34,6 +36,27 @@ func New(cfg *util.Configuration, db *mgo.Session) *echo.Echo {
 	//e.HTTPErrorHandler = custErr.handler
 	//e.Binder = &CustomBinder{b: &echo.DefaultBinder{}}
 	return e
+}
+
+func redisInstance(cfg *util.Configuration) *redis.Client {
+
+	rdb := redis.NewClient(&redis.Options{
+		Addr:     cfg.Redis.Addr,
+		Password: cfg.Redis.Password, // no password set
+		DB:       cfg.Redis.DB,       // use default DB
+	})
+
+	return rdb
+
+}
+
+func redisMiddleware(_redis *redis.Client) echo.MiddlewareFunc {
+	return func(next echo.HandlerFunc) echo.HandlerFunc {
+		return func(ectx echo.Context) error {
+			ectx.Set("redis", _redis)
+			return next(ectx)
+		}
+	}
 }
 
 func healthCheck(c echo.Context) error {
@@ -65,7 +88,7 @@ func Headers() echo.MiddlewareFunc {
 			// Denies website content to be served in an iframe
 			c.Response().Header().Set("X-Frame-Options", "DENY")
 			c.Response().Header().Set("Strict-Transport-Security", "max-age=5184000; includeSubDomains")
-			// Prevents Internet Explorer from executing downloads in site's context
+			// Prevents Internet Explorer from executing downlo	ads in site's context
 			c.Response().Header().Set("X-Download-Options", "noopen")
 			// Minimal XSS protection
 			c.Response().Header().Set("X-XSS-Protection", "1; mode=block")

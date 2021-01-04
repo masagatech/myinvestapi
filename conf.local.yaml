@@ -3,10 +3,16 @@ database:
   timeout_seconds: 5
   url: postgres://postgres:Sa%231234%24@postgressdb-1.cdzdqhoyswos.us-east-2.rds.amazonaws.com:5432/abst?sslmode=disable
 
+redis:
+  address: "localhost:6379"
+  password: ""
+  db: 0
+
+
 zerodha:
-  api_url: https://zerodha-sandbox.herokuapp.com
-  api_key: 2323123
-  api_secret: 2132132112
+  api_url: https://api.kite.trade
+  api_key: q4twru5mci4opsin
+  api_secret: 0g2f6iegfbnaz2qpqomdx6a8ozhddacr
   redirect_url: http://localhost:8080/#/settings/broker
 
 mongo:

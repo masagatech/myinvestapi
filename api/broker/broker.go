@@ -107,7 +107,7 @@ func login(c echo.Context) error {
 	}
 
 	login_url := getZerodhaLoginUrl(c)
-	login_url += "&redirect_params=" + params.Userid
+	login_url += "&redirect_params=uid%3D" + params.Userid
 
 	return util.Response(c, 1, "", "", login_url)
 

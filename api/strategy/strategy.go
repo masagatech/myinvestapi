@@ -98,7 +98,7 @@ func get(c echo.Context) error {
 		"stop_loss_point":       1,
 		"trigger_point":         1,
 		"stop_loss_order_level": 1,
-		"tradesymbol":           1,
+		"tradingsymbol":         1,
 		"exchange":              1,
 	}).All(&_strategy)
 
@@ -135,7 +135,7 @@ func edit(c echo.Context) error {
 		"stop_loss_point":       1,
 		"trigger_point":         1,
 		"stop_loss_order_level": 1,
-		"tradesymbol":           1,
+		"tradingsymbol":         1,
 		"exchange":              1,
 	}).One(&_strategy)
 
@@ -163,7 +163,7 @@ func delete(c echo.Context) error {
 		"stop_loss_point":       1,
 		"trigger_point":         1,
 		"stop_loss_order_level": 1,
-		"tradesymbol":           1,
+		"tradingsymbol":         1,
 		"exchange":              1,
 	}).One(&_strategy)
 
@@ -192,11 +192,11 @@ func start(c echo.Context) error {
 		"stop_loss_point":       1,
 		"trigger_point":         1,
 		"stop_loss_order_level": 1,
-		"tradesymbol":           1,
+		"tradingsymbol":         1,
 		"exchange":              1,
 	}).One(&_strategy)
 
-	// kc := module.GetZerodhaInstance(c)
+	placeGTT(_strategy, c)
 
 	// _col_third_party, _ := db.GetCollection(c, db.Thirdpartytokens)
 
@@ -207,12 +207,13 @@ func start(c echo.Context) error {
 func placeGTT(_strategy Strategy, c echo.Context) int {
 	_session_token := util.GetTokenData(c)
 	kc := integration.GetSesssion(c, _session_token.Id)
+
 	var transactionType = ""
 	var triggerValue = 0.0
 	var limitPrice = 0.0
 
 	if _strategy.Gtt_type == "BUY" {
-		if _strategy.Type == "BUY" {
+		if _strategy.Type == "" {
 			transactionType = kiteconnect.TransactionTypeBuy
 			triggerValue = _strategy.Order_price
 			limitPrice = _strategy.Stop_loss_price
@@ -234,10 +235,15 @@ func placeGTT(_strategy Strategy, c echo.Context) int {
 
 	}
 
+	quote, quote_er := kc.GetQuote(_strategy.Exchange + ":" + _strategy.Tradingsymbol)
+	if quote_er != nil {
+		log.Printf("error placing gtt: %v", quote_er)
+	}
+
 	gttResp, err := kc.PlaceGTT(kiteconnect.GTTParams{
 		Tradingsymbol:   _strategy.Tradingsymbol,
 		Exchange:        _strategy.Exchange,
-		LastPrice:       800,
+		LastPrice:       quote[_strategy.Exchange+":"+_strategy.Tradingsymbol].LastPrice,
 		TransactionType: transactionType,
 		Trigger: &kiteconnect.GTTSingleLegTrigger{
 			TriggerParams: kiteconnect.TriggerParams{
@@ -248,7 +254,7 @@ func placeGTT(_strategy Strategy, c echo.Context) int {
 		},
 	})
 	if err != nil {
-		log.Fatalf("error placing gtt: %v", err)
+		log.Printf("error placing gtt: %v", err)
 	}
 
 	log.Println("placed GTT trigger_id = ", gttResp.TriggerID)
